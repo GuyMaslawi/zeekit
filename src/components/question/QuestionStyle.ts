@@ -11,9 +11,21 @@ export const OverviewContent = styled('div')`
   padding: 1rem 0 0;
 `;
 
+export const QuestionText = styled('div')`
+  font-size: 4rem;
+  font-weight: bold;
+  letter-spacing: 1rem;
+  text-align: center;
+  
+  @media (max-width: 599px){
+    font-size: 2rem;
+    margin: 3rem 0;
+  }
+`;
+
 export const TextFieldStyle = styled(TextField)({
     '& .MuiInputBase-input': {
         fontSize: '2.5rem',
-        letterSpacing: '1rem'
+        letterSpacing: '1rem',
     }
 });

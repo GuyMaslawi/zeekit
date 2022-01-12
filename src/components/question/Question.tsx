@@ -1,10 +1,10 @@
 import {useCallback, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {Fade, Grid} from "@mui/material";
+import {Fade, Grid, useMediaQuery} from "@mui/material";
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import {OverviewContent, QuestionNumber, TextFieldStyle} from "./QuestionStyle";
+import {OverviewContent, QuestionNumber, TextFieldStyle, QuestionText} from "./QuestionStyle";
 import {RootState} from "../../store/store";
 import {
     getRandomQuestion,
@@ -22,13 +22,14 @@ const Question = () => {
         finishGame,
         life,
         currentQuestion,
-        currentWord,
         questionNumber
     } = useSelector((state: RootState) => state.movies);
     const [isOverview, setIsOverview] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const [inputValue, setInputValue] = useState(currentWord);
+    const [inputValue, setInputValue] = useState("");
+    const [randomWord, setRandomWord] = useState("");
     const dispatch = useDispatch();
+    const isMobile = useMediaQuery('(max-width: 599px)');
 
     const getRandomWord = useCallback((word: string) => {
         let countHidden = 0;
@@ -41,7 +42,7 @@ const Question = () => {
 
             }
         }
-        setInputValue(strArray.join(''));
+        setRandomWord(strArray.join(''));
     }, []);
 
     useEffect(() => {
@@ -81,34 +82,49 @@ const Question = () => {
                 <div>You Have Finished the Game Congratulations!!</div>
                 :
                 <Grid container
-                      spacing={3}
                       justifyContent="center"
-                      alignItems="center">
+                      alignItems="center"
+                      xs={12}>
+                    <Grid item
+                          container
+                          xs={12}
+                          justifyContent={isMobile ? "initial" : "space-between"}
+                          alignItems="center">
+                        <Grid item xs={6} sm={2}>
+                            <QuestionNumber>Question: {questionNumber}</QuestionNumber>
+                        </Grid>
+                        <Grid item sm container direction={isMobile ? 'row' : 'row-reverse'}>
+                            <Grid item xs={12} sm={2} sx={{textAlign: 'right'}}>
+                                <MainButton isIcon
+                                            onClick={openModal}>
+                                    <LeaderboardIcon/>
+                                </MainButton>
+                            </Grid>
+                            <Grid item xs={12} sm>
+                                <QuestionText>{randomWord}</QuestionText>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item
+                          container
+                          xs={12}
+                          justifyContent="center"
+                          sx={{
+                              margin: '5rem 0'
+                          }}>
+                        <Grid item xs sm={7}>
+                            <TextFieldStyle value={inputValue}
+                                            onChange={e => handleInputValue(e)}
+                                            fullWidth
+                                            placeholder="Answer"
+                            />
+                        </Grid>
+                    </Grid>
                     <Grid item
                           container
                           xs={12}
                           justifyContent="space-between"
-                          alignItems="center"
-                          sx={{maxWidth: '32rem'}}>
-                        <QuestionNumber>Question: {questionNumber}</QuestionNumber>
-                        <MainButton isIcon
-                                    onClick={openModal}>
-                            <LeaderboardIcon/>
-                        </MainButton>
-                    </Grid>
-                    <Grid item container xs={12}>
-                        <TextFieldStyle value={inputValue}
-                                        onChange={e => handleInputValue(e)}
-                                        fullWidth
-                                        variant="standard"
-                        />
-                    </Grid>
-                    <Grid item
-                          container
-                          xs={12}
-                          justifyContent="space-between"
-                          alignItems="center"
-                          sx={{maxWidth: '32rem'}}>
+                          alignItems="center">
                         <MainButton isIcon
                                     disabled={isOverview}
                                     onClick={showHint}>
@@ -129,7 +145,8 @@ const Question = () => {
                     <Fade in timeout={500}>
                         <Grid item
                               container
-                              xs={12}>
+                              xs={12}
+                              sx={{ marginTop: isMobile ? '2rem' : '0' }}>
                             <OverviewContent>
                                 {currentQuestion.overview}
                             </OverviewContent>
